@@ -1,0 +1,15 @@
+{
+  "name": "doomiso-server",
+  "version": "1.0.1",
+  "description": "\u001b[A\u001b[A\u001b[B\u001b[Bnode server in order to replace PHP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kagashino",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "mysql": "^2.13.0"
+  }
+}
