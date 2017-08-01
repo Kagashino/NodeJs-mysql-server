@@ -6,10 +6,11 @@ function DataBase(config){
 	const mysql = require('mysql'),
 		  conn = mysql.createConnection(config);
 	conn.connect();
-	this.connection = conn;
+	// this.connection = conn;
 	this.close = conn.end;
 	this.prom = sql=>new Promise((resolve,reject)=>{
-		this.connection.query(sql, (err, rows, field)=>{
+		console.log("SQL:::",sql);
+		conn.query(sql, (err, rows, field)=>{
 			if (err){
 				reject(err);
 				return;
@@ -23,11 +24,11 @@ DataBase.prototype = {
 	/*
 	 * add one line;
 	 */
-	add(table,values){
+	add(table,keys,values){
 		if(!(values instanceof Array || values instanceof String)){
 			throw new TypeError('values must be String or Array');
 		}
-		let sql = `INSERT INTO ${table} VALUES (${values.toString()})`
+		let sql = `INSERT INTO ${table} (${keys.toString()}) VALUES (${values.toString()})`
 		return this.prom(sql);
 	},
 	/*
@@ -58,37 +59,29 @@ DataBase.prototype = {
 			sql = `INSERT INTO ${table} (${_key}) VALUES ${formatValues.join(',')} ;`;
 		} else if (keys instanceof Array && values instanceof Array){
 
-			formatValues 	= values.map( item=>"(" + item.join(',') + ")" );
+			formatValues	= values.map( item=>"(" + item.join(',') + ")" );
 			sql 			= `INSERT INTO ${table} (${keys.toString()}) VALUES ${formatValues.join(',')} ;`;		
 		} else {
 
 			throw new TypeError("Unacceptable type of parameters");
 		}
 		return this.prom(sql);
-		// cb = callback?callback:((values instanceof Function)?values:null);
-		// this.connection.query(sql, (err, rows, field)=>{
-		// 		if(err) throw err;
-		// 		cb && cb(rows,field);
-		// })
-
 	},
 	/*
 	 *@params (rest): auto match your keywords into operating sentence
+	 * Second Non-Condition or Non-Order SQL will treat as column name
+	 * Sort SQL is ASC or DESC required
 	 * String passed required
 	 */
 	find(table, ...rest){
 		
 		let sql = '', col = '*', extra = [];
-		// if(rest[rest.length-1] instanceof Function){
-		// 	cb = rest.pop();
-		// }
 		if(rest.length){
 			rest.forEach((item,index)=>{
 				if(!item instanceof String){
 					throw new TypeError('String parameters required');
 				}
 				if(item.match(/=|<|>|BETWEEN|LIKE/i) ){
-					console.log("where item",item)
 					extra.unshift( (item.match(/WHERE/i)==null?'WHERE':'' + item) );
 				} else if (item.match(/ASC|DESC/i) ){
 					extra.push( (!item.match(/ORDER BY/i)==null?'ORDER BY ':'') + item );
@@ -100,13 +93,7 @@ DataBase.prototype = {
 			});
 		}
 		sql = `SELECT ${col} FROM ${table} ${extra.join(' ')};`;
-		console.log(sql);
 		return this.prom(sql);
-		// this.connection.query(sql, (err, rows, field)=>{
-		// 	if(err) throw err;
-		// 	cb && cb(rows, field);
-
-		// })
 	},
 	/*
 	* @params rest keyword 'WHERE' required
@@ -114,15 +101,8 @@ DataBase.prototype = {
 	update(table, set, ...rest){
 
 		let sql = `UPDATE ${table} SET ${set} `;
-		// if(rest[rest.length-1] instanceof Function){
-		// 	cb = rest.pop();
-		// }
 		sql += `WHERE ${rest.length?rest.join(' '):1};`;
 		return this.prom(sql);
-		// this.connection.query(sql, (err, rows, field)=>{
-		// 	if (err) throw err;
-		// 	cb && cb(rows,field);
-		// })
 	},
 	/*
 	 * @param rest: keyword 'WHERE' can be ignored;
@@ -130,31 +110,20 @@ DataBase.prototype = {
 	remove(table,...rest){
 
 		let sql = `DELETE FROM ${table} `;
-		// if(rest[rest.length-1] instanceof Function){
-		// 	cb = rest.pop();
-		// }
 		if(rest.length){
 			if(!rest.toString().match(/where/i)){
 				sql += 'WHERE '
 			}
 			sql += `${rest.join(' ')};`;
 		}
-		console.log("removesql",sql)
 		return this.prom(sql);
-		// this.connection.query(sql, (err, rows, field)=>{
-		// 	if (err) throw err;
-		// 	cb && cb(rows,field);
-		// })
 
 	},
 	/*
 	 * pass native SQL directly... it may used most frequently
 	 */
 	query(sql){
-		// let callback = cb;
-		if(0 && !callback instanceof Function && !sql instanceof String){
-			throw new TypeError('SQL & callback function required');
-		}
+
 		return this.prom(sql);
 	}
 }

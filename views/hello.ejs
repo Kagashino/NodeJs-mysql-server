@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Node Test</title>
+	<script src="js/lib.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+	<button id="trigger">点击显示</button>
+	<script>
+	let param = {
+		type:'POST',
+		url:'/hello',
+		params:{
+			pgSz:20,
+			pgIdx:1
+		}
+	}
+	$('#trigger').click(()=>nodeRequest(param))
+	function nodeRequest(item){
+		// console.log(item);
+		$.ajax({
+			type: item.type,
+			url: item.url ,
+			data: item.params ,
+			success: res=>console.log(res)
+		});
+	}
+</script>
+</body>
+
+</html>

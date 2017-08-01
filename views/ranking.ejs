@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Node Test</title>
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+	<button id="trigger">点击发送数据</button>
+	<button id="trigger2">发送另一数据</button>
+	<button id="trigger3">随机记录分数</button>
+	<script>
+		$('#trigger').click(()=>requestTest())
+		$('#trigger2').click(()=>queryRanking())
+		$('#trigger3').click(()=>recordScore())
+		function queryRanking(){
+			$.ajax({
+				type:'POST',
+				url:'/test',
+				data:{
+					pgSz    : 50,
+					pgIdx   : 1,
+					order   : ['Rscore','desc']
+				},
+				dataType:'json',
+				success:res=>console.log("success",res)
+			});
+		}
+
+		
+		function requestTest(){
+			$.ajax({
+				type:'POST',
+				url:'/exam',
+				data:{
+					pgSz    : 50,
+					pgIdx   : 1,
+					order   : 'desc'
+				},
+				success:res=>console.log("second",res)
+			});
+		}
+		function recordScore() {
+			let ScoreData = {
+				Rname:'@TestingName',
+				Rscore:Math.ceil(Math.Random*5000 + 2000),
+				Rtime:new Date().getTime(),
+				Rremark:''
+			}
+		}
+	</script>
+</body>
+
+</html>
