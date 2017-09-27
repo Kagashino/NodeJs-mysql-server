@@ -1,17 +1,18 @@
 ###NodeJS mysql server
 
-#####require 
+#####require   
 	Node.js
 	Mysql
 
-#####Setup:
-	$ npm intall
+#####Setup:  
+>$ npm install
 
-#####Run:
-	$ node 'file path'
-	view localhost:52049 to check result
+#####Run:  
+>$ node 'file path'
+
+view localhost:52049 to check result
 
 
 
-if question:
+if question:  
 	contact('ghosthcp516@hotmail.com')
